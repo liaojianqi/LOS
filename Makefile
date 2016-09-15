@@ -22,11 +22,10 @@ asmhead.bin : asmhead.nas
 naskfunc.obj : naskfunc.nas
 	$(NASK) naskfunc.nas naskfunc.obj
 
-bootpack.gas : bootpack.c
-	$(CC1) -o bootpack.gas bootpack.c
-
-bootpack.nas : bootpack.gas
-	$(GAS2NASK) bootpack.gas bootpack.nas
+%.gas : %.c
+	$(CC1) -o $*.gas $*.c
+%.nas : %.gas
+	$(GAS2NASK) $*.gas $*.nas
 
 bootpack.obj : bootpack.nas
 	$(NASK) bootpack.nas bootpack.obj
@@ -37,20 +36,8 @@ hankaku.bin : hankaku.txt
 hankaku.obj : hankaku.bin
 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
 
-graphic.gas : graphic.c
-	$(CC1) -o graphic.gas graphic.c
-
-graphic.nas : graphic.gas 
-	$(GAS2NASK) graphic.gas graphic.nas
-
 graphic.obj : graphic.nas 
 	$(NASK) graphic.nas graphic.obj
-
-dsctbl.gas : dsctbl.c 
-	$(CC1) -o dsctbl.gas dsctbl.c
-
-dsctbl.nas : dsctbl.gas 
-	$(GAS2NASK) dsctbl.gas dsctbl.nas
 
 dsctbl.obj : dsctbl.nas 
 	$(NASK) dsctbl.nas dsctbl.obj
