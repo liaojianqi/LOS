@@ -26,21 +26,14 @@ naskfunc.obj : naskfunc.nas
 	$(CC1) -o $*.gas $*.c
 %.nas : %.gas
 	$(GAS2NASK) $*.gas $*.nas
-
-bootpack.obj : bootpack.nas
-	$(NASK) bootpack.nas bootpack.obj
+%.obj : %.nas
+	$(NASK) $*.nas $*.obj
 
 hankaku.bin : hankaku.txt
 	$(MAKEFONT) hankaku.txt hankaku.bin
 
 hankaku.obj : hankaku.bin
 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
-
-graphic.obj : graphic.nas 
-	$(NASK) graphic.nas graphic.obj
-
-dsctbl.obj : dsctbl.nas 
-	$(NASK) dsctbl.nas dsctbl.obj
 
 bootpack.bim : bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj
 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \

@@ -1,21 +1,5 @@
-void load_gdtr(int,int);
-void load_idtr(int,int); 
+#include "bootpack.h"
 
-//一个内存段
-/*要保存的信息有：开始地址，段长，权限信息*/
-struct SEGMENT_DESCRIPTOR {
-    //limit：段的字节数-1.即段的范围：[base,base+lime]
-    //base:4字节,limit:3字节,access_right:1字节
-    short limit_low, base_low;
-    char base_mid, access_right;
-    char limit_high, base_high;
-};
-
-struct GATE_DESCRIPTOR {
-    short offset_low, selector;
-    char dw_count, access_right;
-    short offset_high;
-};
 //初始化gdt和idt
 void init_gdtidt(void){
     struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *) 0x00270000;//gdt保存的地址
