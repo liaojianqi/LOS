@@ -36,7 +36,7 @@ struct BOOTINFO{
 /*要保存的信息有：开始地址，段长，权限信息*/
 struct SEGMENT_DESCRIPTOR {
     //limit：段的字节数-1.即段的范围：[base,base+lime]
-    //base:4字节,limit:3字节,access_right:1字节
+    //base:4字节,limit:20位,access_right:12位
     short limit_low, base_low;
     char base_mid, access_right;
     char limit_high, base_high;
