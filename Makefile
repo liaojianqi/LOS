@@ -1,5 +1,8 @@
+SHELL = cmd.exe
 TOOLPATH = ../z_tools/
 INCPATH  = ../z_tools/haribote/ 
+DEL = del
+COPY = copy
 
 NASK     = $(TOOLPATH)nask.exe  
 EDIMG    = $(TOOLPATH)edimg.exe 
@@ -15,7 +18,7 @@ default:
 	../z_tools/make.exe	run
 
 ipl.bin:ipl.nas
-	../z_tools/nask.exe ipl.nas ipl.bin
+	$(NASK) ipl.nas ipl.bin
 asmhead.bin : asmhead.nas
 	$(NASK) asmhead.nas asmhead.bin
 
@@ -52,8 +55,18 @@ helloos.img : ipl.bin helloos.sys
 		imgout:helloos.img
 
 run:helloos.img
-	copy helloos.img ..\z_tools\qemu\fdimage0.bin
+	$(COPY) helloos.img ..\z_tools\qemu\fdimage0.bin
 	../z_tools/make.exe	-C ../z_tools/qemu
 
 clean:
-	del *.img,*.bin,*.sys,*.bim,*.gas,*.obj,*.hrb,*.map,bootpack.nas,dsctbl.nas,graphic.nas
+	-$(DEL) *.img
+	-$(DEL) *.bin
+	-$(DEL) *.sys
+	-$(DEL) *.bim
+	-$(DEL) *.gas
+	-$(DEL) *.obj
+	-$(DEL) *.hrb
+	-$(DEL) *.map
+	-$(DEL) bootpack.nas    #,dsctbl.nas,graphic.nas
+	-$(DEL) dsctbl.nas
+	-$(DEL) graphic.nas
