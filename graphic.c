@@ -14,7 +14,7 @@ void init_screen(struct BOOTINFO *b_info){
     boxfill8(vram, x, COL8_FFFFFF, x -  3, y - 24, x -  3, y -  3);  
     put_string(vram,x,5,y-20,COL8_FF0000,"Welcome!");
     put_string(vram,x,x-37,y-20,COL8_840000,"LOS");
-    put_string(vram,x,10,10,COL8_FFFFFF,"Welcome to LOS!"); 
+    // put_string(vram,x,10,10,COL8_FFFFFF,"Welcome to LOS!"); 
     
 }
 //打印一个字符,x,y是起始地址，color是颜色,c是待打印字符

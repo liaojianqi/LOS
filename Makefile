@@ -15,7 +15,7 @@ MAKEFONT = $(TOOLPATH)makefont.exe
 BIN2OBJ  = $(TOOLPATH)bin2obj.exe
 
 default:
-	../z_tools/make.exe	run
+	make run
 
 ipl.bin:ipl.nas
 	$(NASK) ipl.nas ipl.bin
@@ -38,9 +38,9 @@ hankaku.bin : hankaku.txt
 hankaku.obj : hankaku.bin
 	$(BIN2OBJ) hankaku.bin hankaku.obj _hankaku
 
-bootpack.bim : bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj
+bootpack.bim : bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj int.obj
 	$(OBJ2BIM) @$(RULEFILE) out:bootpack.bim stack:3136k map:bootpack.map \
-		bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj
+		bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj int.obj
 
 bootpack.hrb : bootpack.bim
 	$(BIM2HRB) bootpack.bim bootpack.hrb 0

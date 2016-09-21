@@ -1,4 +1,4 @@
-#include "bootpack.h"
+#include "bootpack.h" 
 
 //初始化gdt和idt
 void init_gdtidt(void){
@@ -17,6 +17,8 @@ void init_gdtidt(void){
     for (i = 0; i < 256; i++) {
         set_gatedesc(idt + i, 0, 0, 0);
     }
+    set_gatedesc(idt+0x21,(int)asm_inthandler21,2<<3,0x008e);
+    set_gatedesc(idt+0x2c,(int)asm_inthandler2c,2<<3,0x008e);//0x008e是中断的属性
     load_idtr(0x7ff, 0x0026f800);
 }
 /* 属性信息ar一部分存储在access_right中，一部分(ar的高4位)存储在limit_hight中 */
