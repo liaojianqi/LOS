@@ -1,5 +1,6 @@
 #include "bootpack.h" 
 
+
 void init_pic(){
     io_out8(PIC0_IMR,0xff); //禁止所有中断
     io_out8(PIC1_IMR,0xff); //禁止所有中断
@@ -17,15 +18,14 @@ void init_pic(){
     io_out8(PIC0_IMR,  0xfb  ); /* 11111011 禁止中断(PIC1除外) */
     io_out8(PIC1_IMR,  0xff  ); /* 11111111 禁止中断 */
 }
+
+struct KEY_BUFF key_buff;
 /*IRQ1中断：键盘中断*/
+#define PORT_KEYDAT 0x0060
 void inthandler21(){
     struct BOOTINFO *b_info = (struct BOOTINFO*)0x0ff0;
-    boxfill8(b_info->vram,b_info->scrnx,COL8_000000,0,0, 32*8-1, 15);
-    put_string(b_info->vram,b_info->scrnx,0,0,COL8_FFFFFF,"keyboard is been pressed!");
-    //CPU休眠
-    for(;;){
-        io_hlt();
-    }
+    io_out8(PIC0_OCW2,0x61);//通知IRQ1已处理完毕
+    key_buff.data[key_buff.sz++]=io_in8(PORT_KEYDAT);  //获取键盘输入信息
 }
 /*IRQ12中断：鼠标中断*/
 void inthandler2c(){

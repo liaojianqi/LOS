@@ -1,5 +1,7 @@
 #include "bootpack.h"
- 
+#include <stdio.h>
+
+extern struct KEY_BUFF key_buff; 
 void HariMain(void){  
     //初始化gdt,idt
     init_gdtidt(); 
@@ -19,7 +21,21 @@ void HariMain(void){
     io_out8(PIC0_IMR,  0xf9  ); /* 11111001 启用键盘中断*/
     io_out8(PIC1_IMR,  0xef  ); /* 11101111 启用鼠标中断 */
     for (;;) {
-        io_hlt();
+        io_cli();
+        if(key_buff.sz==0){
+            io_hlt();
+            io_sti();
+        }else{
+            unsigned char s[4];
+            sprintf(s,"%02X",key_buff.data[0]);
+            boxfill8(b_info->vram,b_info->scrnx,COL8_000000,0,0, 32*8-1, 15);
+            put_string(b_info->vram,b_info->scrnx,0,0,COL8_FFFFFF,s);
+            int i=0;
+            for(i=0;i<key_buff.sz-1;i++){
+                key_buff.data[i]=key_buff.data[i+1];
+            }//这里需要改
+            key_buff.sz--;
+        }
     }
 }
 

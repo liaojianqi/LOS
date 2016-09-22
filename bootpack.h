@@ -2,6 +2,7 @@ void io_hlt(void);
 void io_cli(void); 
 void io_sti(void);
 void io_out8(int port, int data); 
+unsigned char io_in8(int port); 
 int io_load_eflags(void);
 void io_store_eflags(int eflags);
 void load_gdtr(int,int);
@@ -75,3 +76,7 @@ void init_mouse_cursor8(char*mouse,char bc);
 void putblock8_8(char *vram,int x_size,int pxsize,int pysize,int px0,int py0,char *mouse);
 void boxfill8(unsigned char*vram,int xsize,unsigned char c,int x0,int y0,int x1,int y1);
 void init_palette(void);
+/* 键盘中断处理 */
+struct KEY_BUFF{
+    unsigned char data[32],sz;
+};
