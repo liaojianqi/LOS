@@ -1,7 +1,7 @@
 #include "bootpack.h"
 #include <stdio.h>
 
-extern struct KEY_BUFF key_buff; 
+extern struct KEY_BUFF key_buff,mouse_buff; 
 void HariMain(void){   
     //初始化gdt,idt
     init_gdtidt(); 
@@ -14,7 +14,9 @@ void HariMain(void){
     io_out8(PIC1_IMR,  0xef  ); /* 11101111 启用鼠标中断 */
     //设置缓冲区
     unsigned char key_data[32];
+    unsigned char mouse_data[128];
     init_fifo(&key_buff,32,key_data);
+    init_fifo(&mouse_buff,128,mouse_data);
     // 设置鼠标控制电路可用
     set_mouse_control_circle_enable();
     //初始化调色板
@@ -30,14 +32,22 @@ void HariMain(void){
     set_mouse_enable();
     for (;;) {
         io_cli();
-        if(!has_next(&key_buff)){
+        if(!has_next(&key_buff) && !has_next(&mouse_buff)){
             io_sti();
             io_hlt();
         }else{
-            unsigned char s[4];
-            sprintf(s,"%02X",pop(&key_buff));
-            boxfill8(b_info->vram,b_info->scrnx,COL8_000000,0,0, 32*8-1, 15);
-            put_string(b_info->vram,b_info->scrnx,0,0,COL8_FFFFFF,s);
+            if(has_next(&mouse_buff)){
+                unsigned char s[4];
+                sprintf(s,"%02X",pop(&mouse_buff));
+                boxfill8(b_info->vram,b_info->scrnx,COL8_000000,0,0, 32*8-1, 15);
+                put_string(b_info->vram,b_info->scrnx,0,0,COL8_FFFFFF,s);
+            }
+            if(has_next(&key_buff)){
+                unsigned char s[4];
+                sprintf(s,"%02X",pop(&key_buff));
+                boxfill8(b_info->vram,b_info->scrnx,COL8_000000,0,16, 32*8-1, 31);
+                put_string(b_info->vram,b_info->scrnx,0,16,COL8_FFFFFF,s);   
+            }
         }
     }
 }
