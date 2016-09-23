@@ -77,6 +77,15 @@ void putblock8_8(char *vram,int x_size,int pxsize,int pysize,int px0,int py0,cha
 void boxfill8(unsigned char*vram,int xsize,unsigned char c,int x0,int y0,int x1,int y1);
 void init_palette(void);
 /* 键盘中断处理 */
-struct KEY_BUFF{
-    unsigned char data[32],sz;
+struct FIFO_BUFF{
+    unsigned char *data;
+    int next_w,next_r,len;
 };
+void init_fifo(struct FIFO_BUFF *,int ,unsigned char* );
+void push(struct FIFO_BUFF*,unsigned char);
+unsigned char pop(struct FIFO_BUFF *);
+int has_next(struct FIFO_BUFF *);
+/* 鼠标中断处理 */
+void KBC_ready();
+void set_mouse_control_circle_enable();
+void set_mouse_enable();
