@@ -34,10 +34,10 @@ void put_char(char*vram,int x_size,int x,int y,char color,char c){
     }
 }
 void put_string(char*vram,int x_size,int x,int y,char color,char* s){
-    int l = strlen(s);
     int i=0;
-    for(i=0;i<l;i++){
+    while(s[i]!=0){
         put_char(vram,x_size,x+i*8,y,color,s[i]);
+        i++;
     }
 }
 //bc是背景色
