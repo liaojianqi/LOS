@@ -29,10 +29,10 @@ int mouse_decode(unsigned char c){
         mouse_info.btn = mouse_info.buf[0]&0x07;  //低三位是鼠标点击状态
         mouse_info.x=mouse_info.buf[1];
         mouse_info.y=mouse_info.buf[2];
-        if((mouse_info.buf[0]&0x10)==0){
+        if((mouse_info.buf[0]&0x10)!=0){
             mouse_info.x |= 0xffffff00;
         }
-        if((mouse_info.buf[0]&0x20)==0){
+        if((mouse_info.buf[0]&0x20)!=0){
             mouse_info.y |= 0xffffff00;
         }
         mouse_info.y=-mouse_info.y;

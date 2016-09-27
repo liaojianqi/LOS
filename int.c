@@ -34,7 +34,7 @@ void set_mouse_control_circle_enable(){
     KBC_ready();
     io_out8(KBC_DATA,0x47);//0x47是设置鼠标电路可用
 }
-void set_mouse_enable(){ 
+void set_mouse_enable(){  
     KBC_ready();
     io_out8(KBC_CONTROL,0xd4);//0x60是模式设定指令
     KBC_ready();
