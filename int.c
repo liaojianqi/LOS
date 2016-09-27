@@ -18,28 +18,6 @@ void init_pic(){
     io_out8(PIC1_IMR,  0xff  ); /* 11111111 禁止中断 */
 }
 
-/* 确定控制电路是否做好准备 */
-#define KBC_DATA 0x0060
-#define KBC_CONTROL 0x0064
-void KBC_ready(){
-    for(;;){
-        if((io_in8(KBC_CONTROL) & 0x02) == 0)    //==号的优先级高于位运算,错了好久
-            break;
-    }
-}
-/* 设置鼠标控制电路可用 */
-void set_mouse_control_circle_enable(){
-    KBC_ready();
-    io_out8(KBC_CONTROL,0x60);//0x60是模式设定指令
-    KBC_ready();
-    io_out8(KBC_DATA,0x47);//0x47是设置鼠标电路可用
-}
-void set_mouse_enable(){  
-    KBC_ready();
-    io_out8(KBC_CONTROL,0xd4);//0x60是模式设定指令
-    KBC_ready();
-    io_out8(KBC_DATA,0xf4);//0x47是设置鼠标电路可用
-}
 /*IRQ1中断：键盘中断*/
 struct FIFO_BUFF key_buff,mouse_buff;
 #define PORT_KEYDAT 0x0060

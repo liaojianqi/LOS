@@ -86,6 +86,13 @@ void push(struct FIFO_BUFF*,unsigned char);
 unsigned char pop(struct FIFO_BUFF *);
 int has_next(struct FIFO_BUFF *);
 /* 鼠标中断处理 */
+#define KBC_DATA 0x0060
+#define KBC_CONTROL 0x0064
+struct MOUSE_DEC{
+    unsigned char buf[3],sz;
+    int x,y,btn;
+};
 void KBC_ready();
 void set_mouse_control_circle_enable();
 void set_mouse_enable();
+int mouse_decode(struct MOUSE_DEC*,unsigned char);
