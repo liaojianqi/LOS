@@ -1,8 +1,37 @@
 #include "bootpack.h"
-#include <stdio.h>
+#include <stdio.h> 
 
 extern struct KEY_BUFF key_buff,mouse_buff; 
 struct MOUSE_DEC mouse_info;
+
+//检查内存
+unsigned int memtest(unsigned int start,unsigned int end){
+    char flag486=0;
+    unsigned int eflag,cr0,i;
+    eflag = io_load_eflags();
+    eflag |= 0x40000;
+    io_store_eflags(eflag);
+    eflag = io_load_eflags();
+    if((eflag>>18)&1){
+        flag486=1;
+    }
+    eflag &= ~0x40000;
+    io_store_eflags(eflag);
+    if(flag486){
+        //禁止高速缓存
+        cr0 = io_load_cr0();
+        cr0 |= 0x60000000;
+        io_store_cr0(cr0);
+    }
+    i = memtest_sub(start,end);
+    if(flag486){
+        //恢复高速缓存
+        cr0 = io_load_cr0();
+        cr0 &= ~0x60000000;
+        io_store_cr0(cr0);
+    }
+    return i;
+}
 
 void HariMain(void){   
     //初始化gdt,idt
@@ -31,6 +60,11 @@ void HariMain(void){
     init_mouse_cursor8(mouse,COL8_008484);
     int x=60,y=60;
     putblock8_8(b_info->vram,b_info->scrnx,16,16,60,60,mouse);
+    //显示内存
+    char tmp_s[20];
+    unsigned int capability = memtest(0x400000,0xbfffffff)/(1024*1024);
+    sprintf(tmp_s,"memory %dMB",capability);
+    put_string(b_info->vram,b_info->scrnx,0,32,COL8_FFFFFF,tmp_s); 
     //设置鼠标可用
     set_mouse_enable();  
     for (;;) {

@@ -7,6 +7,11 @@ int io_load_eflags(void);
 void io_store_eflags(int eflags);
 void load_gdtr(int,int);
 void load_idtr(int,int); 
+//内存管理
+unsigned int io_load_cr0(void);
+void io_store_cr0(unsigned int);
+unsigned int memtest_sub(unsigned int ,unsigned int );
+
  
 //设定好色号后的新颜色
 #define COL8_000000     0

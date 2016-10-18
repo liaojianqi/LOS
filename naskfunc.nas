@@ -9,6 +9,8 @@ GLOBAL  _io_out8, _io_out16, _io_out32
 GLOBAL  _io_load_eflags, _io_store_eflags  
 GLOBAL  _load_gdtr, _load_idtr   
 GLOBAL  _asm_inthandler21,_asm_inthandler2c
+GLOBAL  _io_load_cr0,_io_store_cr0,_memtest_sub
+
 EXTERN  _inthandler21,_inthandler2c,_inthandler27
 
 
@@ -134,3 +136,39 @@ _asm_inthandler27:
         POP             DS
         POP             ES
         IRETD
+
+_io_load_cr0:
+        MOV eax,cr0
+        ret
+_io_store_cr0:
+        mov eax,[esp+4]
+        mov cr0,eax
+        ret
+_memtest_sub:
+        push    ebx
+        push    edx
+        mov     ebx,[esp+8+4]
+loop_fun:
+        add     ebx,0ffch
+        mov     edx,[ebx]
+        mov     eax,0aa55aa55h
+        mov     [ebx],eax
+        mov     eax,0ffffffffh
+        xor     [ebx],eax
+        mov     eax,055aa55aah
+        cmp     [ebx],eax
+        jne     _memtest_sub_end
+        mov     eax,0ffffffffh
+        xor     [ebx],eax
+        mov     eax,0aa55aa55h
+        cmp     [ebx],eax
+        jne     _memtest_sub_end
+        mov     [ebx],edx
+        add     ebx,1000h
+        cmp     ebx,[esp+8+8]
+        jbe     loop_fun
+_memtest_sub_end:
+        mov     eax,ebx
+        pop     edx
+        pop     ebx
+        ret

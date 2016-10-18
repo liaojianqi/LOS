@@ -18,6 +18,8 @@ OBJS = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj int.obj\
 
 default:
 	make run
+img:
+	make helloos.img
 ipl.bin:ipl.nas
 	$(NASK) ipl.nas ipl.bin
 asmhead.bin : asmhead.nas
