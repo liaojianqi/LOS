@@ -3,25 +3,24 @@
     ORG     0x7c00
 
     JMP     entry
-    DB      0x90
-    DB      "HELLOIPL"
-    DW      512
-    DB      1
-    DW      1
-    DB      2
-    DW      224
-    DW      2880
-    DB      0xf0
-    DW      9
-    DW      18
-    DW      2
-    DD      0
-    DD      2880
-    DB      0,0,0x29
-    DD      0xffffffff
-    DB      "HELLO-OS   "
-    DB      "FAT12   "
-    RESB    18
+    db      0x90,"HELLOIPL"
+    dw      512
+    db      1
+    dw      1
+    db      2
+    dw      224
+    dw      2880
+    db      0xf0
+    dw      9
+    dw      18
+    dw      2
+    dd      0
+    dd      2880
+    db      0,0,0x29
+    dd      0xffffffff
+    db      "HELLO-OS   "
+    db      "FAT12   "
+    resb    18
 entry:
     mov ax,0
     mov ss,ax
@@ -29,20 +28,20 @@ entry:
     mov ds,ax
     mov es,ax
 
-    mov CH,0    ;柱面号
-    mov DH,0    ;磁头号
-    mov CL,2    ;扇区
-    mov AX,0x0820
-    mov ES,AX   ;地址
+    mov ch,0    ;柱面号
+    mov dh,0    ;磁头号
+    mov cl,2    ;扇区
+    mov ax,0x0820
+    mov es,ax   ;地址
 
 read_single_sector:
-    mov AH,0x02
+    mov ah,0x02
     mov al,1    ;扇区数
     mov bx,0    ;地址
     mov dl,0    ;驱动器号
     int 0x13
     ;地址增加
-    mov AX,ES
+    mov ax,es
     add ax,0x0020
     mov es,ax
     add cl,1
@@ -65,8 +64,8 @@ head_end:
     mov cl,1
     jmp read_single_sector
 fin:
-    MOV [0x0ff0],ch         ;必须写，在asmhead.nas中用到了
-    jmp 0xc200
+    mov [0x0ff0],ch         ;必须写，在asmhead.nas中用到了
+    jmp 0x0c20:0
 
-    RESB    0x7dfe-$
-    DB      0x55, 0xaa
+    resb    0x7dfe-$
+    db      0x55, 0xaa

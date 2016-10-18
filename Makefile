@@ -13,7 +13,8 @@ BIM2HRB  = $(TOOLPATH)bim2hrb.exe
 RULEFILE = $(TOOLPATH)haribote/haribote.rul
 MAKEFONT = $(TOOLPATH)makefont.exe
 BIN2OBJ  = $(TOOLPATH)bin2obj.exe
-OBJS = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj int.obj fifo.obj mouse.obj keyboard.obj
+OBJS = bootpack.obj naskfunc.obj hankaku.obj graphic.obj dsctbl.obj int.obj\
+	   fifo.obj mouse.obj keyboard.obj
 
 default:
 	make run

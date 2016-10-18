@@ -1,6 +1,6 @@
 org 0xc200
 
-BOTPAK  EQU     0x00280000      ; 待
+BOTPAK  EQU     0x00280000      
 DSKCAC  EQU     0x00100000      ; 待
 DSKCAC0 EQU     0x00008000      ; 待
 
@@ -12,84 +12,83 @@ SCRNX   EQU     0x0ff4          ;分辨率的X上有多少个像素点
 SCRNY   EQU     0x0ff6          ;分辨率的Y上有多少个像素点
 VRAM    EQU     0x0ff8          ;当前显示模式显存开始地址
 
-MOV     AL,0x13         ;设置显示模式
-        MOV     AH,0x00
-        INT     0x10
-        MOV     BYTE [VMODE],8  ;记录画面模式
-        MOV     WORD [SCRNX],320
-        MOV     WORD [SCRNY],200
-        MOV     DWORD [VRAM],0x000a0000
+;设置显示模式
+mov    al,0x13         
+mov    AH,0x00
+int    0x10
+mov    byte [VMODE],8  ;记录画面模式
+mov    word [SCRNX],320
+mov    word [SCRNY],200
+mov    dword [VRAM],0x000a0000
 
 ; 使用bios获取键盘状态
-        MOV     AH,0x02
-        INT     0x16            ; keyboard BIOS
-        MOV     [LEDS],AL
+mov     ah,0x02
+int     0x16            ; keyboard BIOS
+mov     [LEDS],al
 
-        MOV     AL,0xff
-        OUT     0x21,AL
-        NOP                     ; OUT–½—ß‚ð˜A‘±‚³‚¹‚é‚Æ‚¤‚Ü‚­‚¢‚©‚È‚¢‹@Ží‚ª‚ ‚é‚ç‚µ‚¢‚Ì‚Å
-        OUT     0xa1,AL
+;21号端口是PIC
+;禁止一切PIC中断
+mov     al,0xff
+out     0x21,al
+nop                     ; 如果连续执行out指令，有的机器会无法运行
+out     0xa1,al
 
-        CLI                     ; ‚³‚ç‚ÉCPUƒŒƒxƒ‹‚Å‚àŠ„‚èž‚Ý‹ÖŽ~
+cli                     ; 禁止CPU级别的中断
 
-; CPU‚©‚ç1MBˆÈã‚Ìƒƒ‚ƒŠ‚ÉƒAƒNƒZƒX‚Å‚«‚é‚æ‚¤‚ÉAA20GATE‚ðÝ’è
+;设置A20
 
-        CALL    waitkbdout
-        MOV     AL,0xd1
-        OUT     0x64,AL
-        CALL    waitkbdout
-        MOV     AL,0xdf         ; enable A20
-        OUT     0x60,AL
-        CALL    waitkbdout
+        call    waitkbdout
+        mov     al,0xd1
+        out     0x64,AL
+        call    waitkbdout
+        mov     AL,0xdf         ; enable A20
+        out     0x60,AL
+        call    waitkbdout
 
-; ƒvƒƒeƒNƒgƒ‚[ƒhˆÚs
+; 切换到保护模式
 
-[INSTRSET "i486p"]              ; 486‚Ì–½—ß‚Ü‚ÅŽg‚¢‚½‚¢‚Æ‚¢‚¤‹Lq
+[INSTRSET "i486p"]              
 
-        LGDT    [GDTR0]         ; Žb’èGDT‚ðÝ’è
+        LGDT    [GDTR0]         
         MOV     EAX,CR0
-        AND     EAX,0x7fffffff  ; bit31‚ð0‚É‚·‚éiƒy[ƒWƒ“ƒO‹ÖŽ~‚Ì‚½‚ßj
-        OR      EAX,0x00000001  ; bit0‚ð1‚É‚·‚éiƒvƒƒeƒNƒgƒ‚[ƒhˆÚs‚Ì‚½‚ßj
+        AND     EAX,0x7fffffff  
+        OR      EAX,0x00000001  
         MOV     CR0,EAX
         JMP     pipelineflush
 pipelineflush:
-        MOV     AX,1*8          ;  “Ç‚Ý‘‚«‰Â”\ƒZƒOƒƒ“ƒg32bit
+        MOV     AX,1*8          
         MOV     DS,AX
         MOV     ES,AX
         MOV     FS,AX
         MOV     GS,AX
         MOV     SS,AX
 
-; bootpack‚Ì“]‘—
+;bootpack的传递
 
-        MOV     ESI,bootpack    ; “]‘—Œ³
-        MOV     EDI,BOTPAK      ; “]‘—æ
+        MOV     ESI,bootpack    
+        MOV     EDI,BOTPAK      
         MOV     ECX,512*1024/4
         CALL    memcpy
 
-; ‚Â‚¢‚Å‚ÉƒfƒBƒXƒNƒf[ƒ^‚à–{—ˆ‚ÌˆÊ’u‚Ö“]‘—
 
-; ‚Ü‚¸‚Íƒu[ƒgƒZƒNƒ^‚©‚ç
+; 首先从启动扇区开始
 
-        MOV     ESI,0x7c00      ; “]‘—Œ³
-        MOV     EDI,DSKCAC      ; “]‘—æ
+        MOV     ESI,0x7c00      
+        MOV     EDI,DSKCAC      
         MOV     ECX,512/4
         CALL    memcpy
 
-; Žc‚è‘S•”
+;所有剩下的
 
-        MOV     ESI,DSKCAC0+512 ; “]‘—Œ³
-        MOV     EDI,DSKCAC+512  ; “]‘—æ
+        MOV     ESI,DSKCAC0+512 
+        MOV     EDI,DSKCAC+512  
         MOV     ECX,0
         MOV     CL,BYTE [CYLS]
-        IMUL    ECX,512*18*2/4  ; ƒVƒŠƒ“ƒ_”‚©‚çƒoƒCƒg”/4‚É•ÏŠ·
-        SUB     ECX,512/4       ; IPL‚Ì•ª‚¾‚¯·‚µˆø‚­
+        IMUL    ECX,512*18*2/4  
+        SUB     ECX,512/4       
         CALL    memcpy
 
-; asmhead‚Å‚µ‚È‚¯‚ê‚Î‚¢‚¯‚È‚¢‚±‚Æ‚Í‘S•”‚µI‚í‚Á‚½‚Ì‚ÅA
-;   ‚ ‚Æ‚Íbootpack‚É”C‚¹‚é
-
-; bootpack‚Ì‹N“®
+;转到bootpack执行
 
         MOV     EBX,BOTPAK
         MOV     ECX,[EBX+16]
